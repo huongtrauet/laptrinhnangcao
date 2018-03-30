@@ -438,7 +438,7 @@ int Xu_ly_game(Xe &xe, VatCan &vc1, VatCan &vc2, VatCan &vc3, int &toSleep, VatP
 
 
     // vc2 xuất hiện khi vc1 đi quá 1/3
-    if(vc1.td.y > bienduoi/3 || vc2.td.y != -4)
+    if(vc1.td.y > bienduoi/(rand()%5+1) || vc2.td.y != -4)
         vc2.td.y++;
 
     // vc2 chạm biên
@@ -462,7 +462,7 @@ int Xu_ly_game(Xe &xe, VatCan &vc1, VatCan &vc2, VatCan &vc3, int &toSleep, VatP
     }
 
      // vc2 xuất hiện khi vc1 đi quá 1/3
-    if(vc2.td.y > bienduoi/3 || vc3.td.y != -4)
+    if(vc2.td.y > bienduoi/(rand()%5+1) || vc3.td.y != -4)
         vc3.td.y++;
 
 
@@ -501,12 +501,13 @@ int Xu_ly_game(Xe &xe, VatCan &vc1, VatCan &vc2, VatCan &vc3, int &toSleep, VatP
     else if(tmptdx >=25 && tmptdx < 30)
         vp.td.x = 27;
     else if(tmptdx >=30 && tmptdx < 35)
-        vc3.td.x = 32;
+        vp.td.x = 32;
     else if(tmptdx >=35 && tmptdx < 40)
         vp.td.x = 37;
     }
 
      // xử lí ăn vật phẩm
+     // vp trên xe dưới
      if((xe.td.y - vp.td.y <=2 )&&(vp.td.x - xe.td.x <= 1))
      {
          xe.diem+=5;
@@ -519,11 +520,12 @@ int Xu_ly_game(Xe &xe, VatCan &vc1, VatCan &vc2, VatCan &vc3, int &toSleep, VatP
     else if(tmptdx >=25 && tmptdx < 30)
         vp.td.x = 27;
     else if(tmptdx >=30 && tmptdx < 35)
-        vc3.td.x = 32;
+        vp.td.x = 32;
     else if(tmptdx >=35 && tmptdx < 40)
         vp.td.x = 37;
 
      }
+     //vp dươia xe trên
      if((vp.td.y - xe.td.y <= 3) && (vp.td.y - xe.td.y >=0 ) && (vp.td.x - xe.td.x <= 1))
      {
          xe.diem+=5;
@@ -536,7 +538,7 @@ int Xu_ly_game(Xe &xe, VatCan &vc1, VatCan &vc2, VatCan &vc3, int &toSleep, VatP
     else if(tmptdx >=25 && tmptdx < 30)
         vp.td.x = 27;
     else if(tmptdx >=30 && tmptdx < 35)
-        vc3.td.x = 32;
+        vp.td.x = 32;
     else if(tmptdx >=35 && tmptdx < 40)
         vp.td.x = 37;
      }
@@ -583,7 +585,7 @@ int main()
     Xe xe;
     VatCan vc1, vc2, vc3;
     VatPham vp;
-    char xuli;
+    char xulituychon;
     char tengame[3][23] ={
                       { 'D' , 'D' , ' ', ' ', 'D', ' ', 'D', ' ', ' ', ' ', 'D', ' ', ' ', ' ', ' ', ' ', 'D', ' ', 'D', ' ', 'D', 'D', 'D' } ,
                       { 'D' , ' ' , 'D', ' ', 'D', ' ', 'D', ' ', ' ', 'D', ' ', 'D', ' ', ' ', ' ', ' ', ' ', 'D', ' ', ' ', 'D', 'D', ' ' },
@@ -597,24 +599,18 @@ int main()
     int toSleep = 200;
     khoitao(xe, vc1, vc2, vc3, vp);
     cout << "1. Let's go" << endl << "2. Exit";
-    xuli = getch();
-    if(xuli == '1')
+    xulituychon = getch();
+    if(xulituychon == '1')
     {
     while(true)
     {
          int xuli;
 
-         // hiển thị
+          xuli = Xu_ly_game(xe, vc1, vc2, vc3, toSleep, vp);
 
          Hien_thi_trang_thai_game(xe, vc1, vc2, vc3, vp, tengame) ;// điều khiển
 
         Dieu_khien_game(xe);
-
-         // xử lí
-
-         xuli = Xu_ly_game(xe, vc1, vc2, vc3, toSleep, vp);
-
-         // game over
 
          if(xuli==0)
          {
@@ -628,7 +624,7 @@ int main()
     system("pause");
     return 0;
     }
-    else if(xuli == '2')
+    else if(xulituychon == '2')
     {
         system("cls");
         cout << "HEN GAP LAI\t\t\t";
