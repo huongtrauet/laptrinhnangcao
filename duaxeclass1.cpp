@@ -58,7 +58,7 @@ struct hinhdang
 {
 	char hinhxe[4][4];
 	char hinhvc[4][4];
-	char hinhvp[2][2];
+	char hinhvp[1][2];
 	char hinhtengame[3][23];
 };
 
@@ -166,12 +166,12 @@ public:
 
 
 
-		if ((xe.diem % 10 == 0 || vp.td.y != -2) && xe.diem != 0)
-			vp.td.y++;
+		if ((xe.diem % 10 == 0 || vp.td.y != -1) && xe.diem != 0)
+			 vp.td.y++;
 
 		if (vp.td.y == bienduoi)
 		{
-			vp.td.y = -2;
+			vp.td.y = -1;
 			int  tmptdx = 1 + rand() % (bienphai - bientrai - 1) + 15;
 			if (tmptdx > 15 && tmptdx < 20)
 				vp.td.x = 17;
@@ -185,10 +185,10 @@ public:
 				vp.td.x = 37;
 		}
 
-		if ((xe.td.y - vp.td.y <= 2) && (vp.td.x - xe.td.x <= 1))
+		if ((vp.td.y - xe.td.y <= 3) && (vp.td.x - xe.td.x <= 1) && (vp.td.y - xe.td.y >= 0))
 		{
 			xe.diem += 5;
-			vp.td.y = -2;
+			vp.td.y = -1;
 			int  tmptdx = 1 + rand() % (bienphai - bientrai - 1) + 15;
 			if (tmptdx > 15 && tmptdx < 20)
 				vp.td.x = 17;
@@ -203,22 +203,6 @@ public:
 
 		}
 
-		if ((vp.td.y - xe.td.y <= 3) && (vp.td.y - xe.td.y >= 0) && (vp.td.x - xe.td.x <= 1))
-		{
-			xe.diem += 5;
-			vp.td.y = -2;
-			int  tmptdx = 1 + rand() % (bienphai - bientrai - 1) + 15;
-			if (tmptdx > 15 && tmptdx < 20)
-				vp.td.x = 17;
-			else if (tmptdx >= 20 && tmptdx < 25)
-				vp.td.x = 22;
-			else if (tmptdx >= 25 && tmptdx < 30)
-				vp.td.x = 27;
-			else if (tmptdx >= 30 && tmptdx < 35)
-				vp.td.x = 32;
-			else if (tmptdx >= 35 && tmptdx < 40)
-				vp.td.x = 37;
-		}
 		if (abs(vc1.td.x - xe.td.x) <= 3 && abs(vc1.td.y - xe.td.y) <= 3)
 			return 0;
 		if (abs(xe.td.x - vc2.td.x) <= 3 && abs(xe.td.y - vc2.td.y) <= 3)
@@ -266,13 +250,11 @@ private:
 	{
 		vp.hd.hinhvp[0][0] = '$';
 		vp.hd.hinhvp[0][1] = '$';
-		vp.hd.hinhvp[1][0] = '$';
-		vp.hd.hinhvp[1][1] = '$';
 	}
 
 	void khoiTaoToaDoVatPham()
 	{
-		vp.td.y = -2;
+		vp.td.y = -1;
 		int tmptdx = 1 + rand() % (bienphai - bientrai - 1) + 15;
 		if (tmptdx > 15 && tmptdx < 20)
 			vp.td.x = 17;
@@ -281,7 +263,7 @@ private:
 		else if (tmptdx >= 25 && tmptdx < 30)
 			vp.td.x = 27;
 		else if (tmptdx >= 30 && tmptdx < 35)
-			vc3.td.x = 32;
+			vp.td.x = 32;
 		else if (tmptdx >= 35 && tmptdx < 40)
 			vp.td.x = 37;
 	}
@@ -421,7 +403,7 @@ private:
 		for (int i = 0; i < bienduoi; i++)
 		{
 			gotoXY(15, i);
-			cout << '#';
+			cout << (char) 176;
 		}
 		for (int i = 0; i < bienduoi; i++)
 		{
@@ -446,7 +428,7 @@ private:
 		for (int i = 0; i < bienduoi; i++)
 		{
 			gotoXY(40, i);
-			cout << '#';
+			cout << (char) 176;
 		}
 
 		gotoXY(2, 14);
@@ -533,20 +515,14 @@ private:
 
 	void hienThiVatPham()
 	{
-		for (int i = 0; i < 2; i++)
-		{
-			for (int j = 0; j < 2; j++)
-			{
-				int  tmpx = vp.td.x + i;
-				int  tmpy = vp.td.y + j;
-				if (tmpy < bienduoi && tmpy >= 0)
-				{
-					gotoXY(tmpx, tmpy);
-					cout << vp.hd.hinhvp[j][i];
-				}
-			}
-		}
-	}
+	    if(vp.td.y != -1 && vp.td.y < bienduoi)
+        {
+            gotoXY(vp.td.x, vp.td.y);
+            cout << vp.hd.hinhvp[0][0] << vp.hd.hinhvp[0][1];
+        }
+
+
+    }
 
 	int randomToaDo()
 	{
