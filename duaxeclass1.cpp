@@ -34,30 +34,11 @@
 #define consoleWidth 80
 #define bientrai 15
 #define bienphai 40
-#define bienduoi 29
+#define bienduoi 44
 #define intengame  42
 
 using namespace std;
 
-
-void clrscr()
-{
-	CONSOLE_SCREEN_BUFFER_INFO	csbiInfo;
-	HANDLE	hConsoleOut;
-	COORD	Home = { 0,0 };
-	DWORD	dummy;
-
-	hConsoleOut = GetStdHandle(STD_OUTPUT_HANDLE);
-	GetConsoleScreenBufferInfo(hConsoleOut, &csbiInfo);
-
-	FillConsoleOutputCharacter(hConsoleOut, ' ', csbiInfo.dwSize.X * csbiInfo.dwSize.Y, Home, &dummy);
-	csbiInfo.dwCursorPosition.X = 0;
-	csbiInfo.dwCursorPosition.Y = 0;
-	SetConsoleCursorPosition(hConsoleOut, csbiInfo.dwCursorPosition);
-}
-
-
-//screen: goto [x,y]
 void gotoXY(int column, int line)
 {
 	COORD coord;
@@ -65,27 +46,6 @@ void gotoXY(int column, int line)
 	coord.Y = line;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
-
-
-//screen: get [x]
-int whereX()
-{
-	CONSOLE_SCREEN_BUFFER_INFO csbi;
-	if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi))
-		return csbi.dwCursorPosition.X;
-	return -1;
-}
-
-
-//screen: get [y]
-int whereY()
-{
-	CONSOLE_SCREEN_BUFFER_INFO csbi;
-	if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi))
-		return csbi.dwCursorPosition.Y;
-	return -1;
-}
-
 
 void TextColor(int color)
 {
@@ -189,6 +149,22 @@ public:
 				toSleep -= 10;
 		}
 
+		if (vc3.td.y > bienduoi / (rand() % 5 + 1) || vc4.td.y != -4)
+			vc4.td.y++;
+
+
+
+		if (vc4.td.y == bienduoi)
+		{
+			vc4.td.x = randomToaDo();
+			vc4.td.y = -4;
+
+			xe.diem++;
+			if (toSleep > 40)
+				toSleep -= 10;
+		}
+
+
 
 		if ((xe.diem % 10 == 0 || vp.td.y != -2) && xe.diem != 0)
 			vp.td.y++;
@@ -249,6 +225,8 @@ public:
 			return 0;
 		if (abs(xe.td.x - vc3.td.x) <= 3 && abs(xe.td.y - vc3.td.y) <= 3)
 			return 0;
+        if (abs(xe.td.x - vc4.td.x) <= 3 && abs(xe.td.y - vc4.td.y) <= 3)
+			return 0;
 	}
 
 	void Dieu_khien_game()
@@ -276,7 +254,7 @@ public:
 
 private:
 	Xe xe;
-	VatCan vc1, vc2, vc3;
+	VatCan vc1, vc2, vc3, vc4;
 	VatPham vp;
     void khoiTaoVatPham()
 	{
@@ -319,7 +297,7 @@ private:
 		xe.hd.hinhxe[0][0] = 237;
 		xe.hd.hinhxe[0][1] = 234;
 		xe.hd.hinhxe[0][2] = 234;
-		xe.hd.hinhxe[0][4] = 237;
+		xe.hd.hinhxe[0][3] = 237;
 		xe.hd.hinhxe[1][0] = '|';
 		xe.hd.hinhxe[1][1] = 175;
 		xe.hd.hinhxe[1][2] = 175;
@@ -350,56 +328,74 @@ private:
 
 	void khoiTaoHinhVatCan()
 	{
-		vc1.hd.hinhvc[0][0] = '*';
-		vc1.hd.hinhvc[0][1] = '*';
-		vc1.hd.hinhvc[0][2] = '*';
-		vc1.hd.hinhvc[0][3] = '*';
-		vc1.hd.hinhvc[1][0] = '*';
-		vc1.hd.hinhvc[1][1] = '*';
-		vc1.hd.hinhvc[1][2] = '*';
-		vc1.hd.hinhvc[1][3] = '*';
-		vc1.hd.hinhvc[2][0] = '*';
-		vc1.hd.hinhvc[2][1] = '*';
-		vc1.hd.hinhvc[2][2] = '*';
-		vc1.hd.hinhvc[2][3] = '*';
-		vc1.hd.hinhvc[3][0] = '*';
-		vc1.hd.hinhvc[3][1] = '*';
-		vc1.hd.hinhvc[3][2] = '*';
-		vc1.hd.hinhvc[3][3] = '*';
+		vc1.hd.hinhvc[0][0] = 234;
+		vc1.hd.hinhvc[0][1] = 234;
+		vc1.hd.hinhvc[0][2] = 234;
+		vc1.hd.hinhvc[0][3] = 234;
+		vc1.hd.hinhvc[1][0] = 247;
+		vc1.hd.hinhvc[1][1] = 247;
+		vc1.hd.hinhvc[1][2] = 247;
+		vc1.hd.hinhvc[1][3] = 247;
+		vc1.hd.hinhvc[2][0] = 247;
+		vc1.hd.hinhvc[2][1] = 247;
+		vc1.hd.hinhvc[2][2] = 247;
+		vc1.hd.hinhvc[2][3] = 247;
+		vc1.hd.hinhvc[3][0] = 234;
+		vc1.hd.hinhvc[3][1] = 234;
+		vc1.hd.hinhvc[3][2] = 234;
+		vc1.hd.hinhvc[3][3] = 234;
 
-		vc2.hd.hinhvc[0][0] = '*';
-		vc2.hd.hinhvc[0][1] = '*';
-		vc2.hd.hinhvc[0][2] = '*';
-		vc2.hd.hinhvc[0][3] = '*';
-		vc2.hd.hinhvc[1][0] = '*';
-		vc2.hd.hinhvc[1][1] = '*';
-		vc2.hd.hinhvc[1][2] = '*';
-		vc2.hd.hinhvc[1][3] = '*';
-		vc2.hd.hinhvc[2][0] = '*';
-		vc2.hd.hinhvc[2][1] = '*';
-		vc2.hd.hinhvc[2][2] = '*';
-		vc2.hd.hinhvc[2][3] = '*';
-		vc2.hd.hinhvc[3][0] = '*';
-		vc2.hd.hinhvc[3][1] = '*';
-		vc2.hd.hinhvc[3][2] = '*';
-		vc2.hd.hinhvc[3][3] = '*';
+		vc2.hd.hinhvc[0][0] = 234;
+		vc2.hd.hinhvc[0][1] = 234;
+		vc2.hd.hinhvc[0][2] = 234;
+		vc2.hd.hinhvc[0][3] = 234;
+		vc2.hd.hinhvc[1][0] = 247;
+		vc2.hd.hinhvc[1][1] = 247;
+		vc2.hd.hinhvc[1][2] = 247;
+		vc2.hd.hinhvc[1][3] = 247;
+		vc2.hd.hinhvc[2][0] = 247;
+		vc2.hd.hinhvc[2][1] = 247;
+		vc2.hd.hinhvc[2][2] = 247;
+		vc2.hd.hinhvc[2][3] = 247;
+		vc2.hd.hinhvc[3][0] = 234;
+		vc2.hd.hinhvc[3][1] = 234;
+		vc2.hd.hinhvc[3][2] = 234;
+		vc2.hd.hinhvc[3][3] = 234;
 
-		vc3.hd.hinhvc[0][0] = '*';
-		vc3.hd.hinhvc[0][1] = '*';
-		vc3.hd.hinhvc[0][2] = '*';
-		vc3.hd.hinhvc[0][3] = '*';
-		vc3.hd.hinhvc[1][0] = '*';
-		vc3.hd.hinhvc[1][1] = '*';
-		vc3.hd.hinhvc[1][2] = '*';
-		vc3.hd.hinhvc[1][3] = '*';
-		vc3.hd.hinhvc[2][0] = '*';
-		vc3.hd.hinhvc[2][1] = '*';
-		vc3.hd.hinhvc[2][2] = '*';
-		vc3.hd.hinhvc[2][3] = '*';
-		vc3.hd.hinhvc[3][0] = '*';
-		vc3.hd.hinhvc[3][1] = '*';
-		vc3.hd.hinhvc[3][2] = '*';
-		vc3.hd.hinhvc[3][3] = '*';
+		vc3.hd.hinhvc[0][0] = 234;
+		vc3.hd.hinhvc[0][1] = 234;
+		vc3.hd.hinhvc[0][2] = 234;
+		vc3.hd.hinhvc[0][3] = 234;
+		vc3.hd.hinhvc[1][0] = 247;
+		vc3.hd.hinhvc[1][1] = 247;
+		vc3.hd.hinhvc[1][2] = 247;
+		vc3.hd.hinhvc[1][3] = 247;
+		vc3.hd.hinhvc[2][0] = 247;
+		vc3.hd.hinhvc[2][1] = 247;
+		vc3.hd.hinhvc[2][2] = 247;
+		vc3.hd.hinhvc[2][3] = 247;
+		vc3.hd.hinhvc[3][0] = 234;
+		vc3.hd.hinhvc[3][1] = 234;
+		vc3.hd.hinhvc[3][2] = 234;
+		vc3.hd.hinhvc[3][3] = 234;
+
+		vc4.hd.hinhvc[0][0] = 234;
+		vc4.hd.hinhvc[0][1] = 234;
+		vc4.hd.hinhvc[0][2] = 234;
+		vc4.hd.hinhvc[0][3] = 234;
+		vc4.hd.hinhvc[1][0] = 247;
+		vc4.hd.hinhvc[1][1] = 247;
+		vc4.hd.hinhvc[1][2] = 247;
+		vc4.hd.hinhvc[1][3] = 247;
+		vc4.hd.hinhvc[2][0] = 247;
+		vc4.hd.hinhvc[2][1] = 247;
+		vc4.hd.hinhvc[2][2] = 247;
+		vc4.hd.hinhvc[2][3] = 247;
+		vc4.hd.hinhvc[3][0] = 234;
+		vc4.hd.hinhvc[3][1] = 234;
+		vc4.hd.hinhvc[3][2] = 234;
+		vc4.hd.hinhvc[3][3] = 234;
+
 	}
 
 	void khoiTaoToaDoVatCan()
@@ -413,6 +409,9 @@ private:
 
 		vc3.td.x = randomToaDo();
 		vc3.td.y = -4;
+
+		vc4.td.x = randomToaDo();
+		vc4.td.y = -4;
 	}
 
 	void hienThiBien()
@@ -485,7 +484,7 @@ private:
 				if (tmpy >= 0 && tmpy < bienduoi)
 				{
 					gotoXY(tmpx, tmpy);
-					putch(vc1.hd.hinhvc[j][i]);
+					cout << vc1.hd.hinhvc[j][i];
 				}
 			}
 		}
@@ -498,7 +497,7 @@ private:
 				if (tmpy >= 0 && tmpy < bienduoi)
 				{
 					gotoXY(tmpx, tmpy);
-					putch(vc2.hd.hinhvc[j][i]);
+					cout << vc2.hd.hinhvc[j][i];
 				}
 			}
 		}
@@ -512,7 +511,21 @@ private:
 				if (tmpy >= 0 && tmpy < bienduoi)
 				{
 					gotoXY(tmpx, tmpy);
-					putch(vc3.hd.hinhvc[j][i]);
+					cout << vc3.hd.hinhvc[j][i];
+				}
+			}
+		}
+
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				int tmpx = vc4.td.x + i;
+				int tmpy = vc4.td.y + j;
+				if (tmpy >= 0 && tmpy < bienduoi)
+				{
+					gotoXY(tmpx, tmpy);
+					cout << vc1.hd.hinhvc[j][i];
 				}
 			}
 		}
@@ -529,7 +542,7 @@ private:
 				if (tmpy < bienduoi && tmpy >= 0)
 				{
 					gotoXY(tmpx, tmpy);
-					putch(vp.hd.hinhvp[j][i]);
+					cout << vp.hd.hinhvp[j][i];
 				}
 			}
 		}
@@ -575,7 +588,6 @@ int main()
                 cout << "Game over " << endl << "Diem cua ban: " << xeclass.GetDiem();
                 break;
                 system("pause");
-
             }
             Sleep(toSleep);
         }
