@@ -1,40 +1,17 @@
 #include <iostream>
-#include <conio.h>
-#include <cstdlib>
-#include <cstring>
+#include <vector>
+#include <math.h>
+#include <algorithm>
+#include <stack>
+#include <vector>
 #include <windows.h>
 #include <stdio.h>
-#include <time.h>
-using namespace std;
+#include <conio.h>
+#include <cstdlib>
+#include <ctime>
+#include <string>
+#include <string.h>
 
-
-
-
-/*
-int inputKey()
-{
-	if (_kbhit())
-	{
-		int key = _getch();
-
-		if (key == 224)	// special key
-		{
-			key = _getch();
-			return key + 1000;
-		}
-
-		return key;
-	}
-	else
-	{
-		return key_none;
-	}
-
-	return key_none;
-} */
-
-
-//-------------------------Screen-------------------------
 #define ColorCode_Back			0
 #define ColorCode_DarkBlue		1
 #define ColorCode_DarkGreen		2
@@ -51,552 +28,642 @@ int inputKey()
 #define ColorCode_Pink			13
 #define ColorCode_Yellow		14
 #define ColorCode_White			15
-
 #define default_ColorCode		7
-void clrscr()
-{
-	CONSOLE_SCREEN_BUFFER_INFO	csbiInfo;
-	HANDLE	hConsoleOut;
-	COORD	Home = {0,0};
-	DWORD	dummy;
-
-	hConsoleOut = GetStdHandle(STD_OUTPUT_HANDLE);
-	GetConsoleScreenBufferInfo(hConsoleOut,&csbiInfo);
-
-	FillConsoleOutputCharacter(hConsoleOut,' ',csbiInfo.dwSize.X * csbiInfo.dwSize.Y,Home,&dummy);
-	csbiInfo.dwCursorPosition.X = 0;
-	csbiInfo.dwCursorPosition.Y = 0;
-	SetConsoleCursorPosition(hConsoleOut,csbiInfo.dwCursorPosition);
-}
-
-
-//screen: goto [x,y]
-void gotoXY (int column, int line)
-{
-	COORD coord;
-	coord.X = column;
-	coord.Y = line;
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),coord);
-}
-
-
-//screen: get [x]
-int whereX()
-{
-	CONSOLE_SCREEN_BUFFER_INFO csbi;
-	if(GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi))
-		return csbi.dwCursorPosition.X;
-	return -1;
-}
-
-
-//screen: get [y]
-int whereY()
-{
-	CONSOLE_SCREEN_BUFFER_INFO csbi;
-	if(GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi))
-		return csbi.dwCursorPosition.Y;
-	return -1;
-}
-
-
-void TextColor (int color)
-{
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE) , color);
-}
-
-    // CHƯƠNG TRÌNH ============================================
 
 #define consoleHeight 30
 #define consoleWidth 80
 #define bientrai 15
 #define bienphai 40
-#define bienduoi 29
+#define bienduoi 44
+#define intengame  42
+
+using namespace std;
+
+void gotoXY(int column, int line)
+{
+	COORD coord;
+	coord.X = column;
+	coord.Y = line;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+}
+
+void TextColor(int color)
+{
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
+
+//CHUONG TR�NH
 
 struct hinhdang
 {
-    char hinhxe[4][4];
-    char hinhvc[4][4];
-    char hinhvp[2][2];
-};
-struct toado
-{
-    int x; // cot
-    int y; // hang
+	char hinhxe[4][4];
+	char hinhvc[4][4];
+	char hinhvp[1][2];
+	char hinhtengame[3][23];
 };
 
+struct toado
+{
+	int x; // cot
+	int y; // hang
+};
 
 struct Xe
 {
-    hinhdang hd;
-    toado td;
-    int diem;
+	hinhdang hd;
+	toado td;
+	int diem;
 };
+
 struct VatCan
 {
-    hinhdang hd;
-    toado td;
+	hinhdang hd;
+	toado td;
 };
 
 struct VatPham
 {
-    hinhdang hd;
-    toado td;
+	hinhdang hd;
+	toado td;
 };
 
-void khoitao(Xe &xe, VatCan &vc1, VatCan &vc2, VatCan &vc3, VatPham &vp)
+class XE
 {
-    // khởi tạo xe
-    xe.hd.hinhxe[0][0] = 237;
-    xe.hd.hinhxe[0][1] = 234;
-    xe.hd.hinhxe[0][2] = 234;
-    xe.hd.hinhxe[0][4] = 237;
-    xe.hd.hinhxe[1][0] = '|';
-    xe.hd.hinhxe[1][1] = 175;
-    xe.hd.hinhxe[1][2] = 175;
-    xe.hd.hinhxe[1][3] = '|';
-    xe.hd.hinhxe[2][0] = '|';
-    xe.hd.hinhxe[2][1] = 175;
-    xe.hd.hinhxe[2][2] = 175;
-    xe.hd.hinhxe[2][3] = '|';
-    xe.hd.hinhxe[3][0] = 237;
-    xe.hd.hinhxe[3][1] = 207;
-    xe.hd.hinhxe[3][2] = 207;
-    xe.hd.hinhxe[3][3] = 237;
+public:
+	XE()
+	{
+		khoiTaoXe();
+		khoiTaoVatCan();
+		khoiTaoVatPham();
+		khoitaotengame();
+	}
 
 
-    xe.td.y = bienduoi - 4;
-    xe.td.x = 15 + 4 * 1 + 2;
+	void Hien_thi_trang_thai_game()
+	{
+		hienThiBien();
+		hienThiXe();
+		hienThiVatCan();
+		hienThiVatPham();
+		hienthitengame();
+	}
 
-    xe.diem = 0;
-
-    // khởi tạo vật cản
-    vc1.hd.hinhvc[0][0]='*';
-    vc1.hd.hinhvc[0][1]='*';
-    vc1.hd.hinhvc[0][2]='*';
-    vc1.hd.hinhvc[0][3]='*';
-    vc1.hd.hinhvc[1][0]='*';
-    vc1.hd.hinhvc[1][1]='*';
-    vc1.hd.hinhvc[1][2]='*';
-    vc1.hd.hinhvc[1][3]='*';
-    vc1.hd.hinhvc[2][0]='*';
-    vc1.hd.hinhvc[2][1]='*';
-    vc1.hd.hinhvc[2][2]='*';
-    vc1.hd.hinhvc[2][3]='*';
-    vc1.hd.hinhvc[3][0]='*';
-    vc1.hd.hinhvc[3][1]='*';
-    vc1.hd.hinhvc[3][2]='*';
-    vc1.hd.hinhvc[3][3]='*';
-
-    vc2.hd.hinhvc[0][0]='*';
-    vc2.hd.hinhvc[0][1]='*';
-    vc2.hd.hinhvc[0][2]='*';
-    vc2.hd.hinhvc[0][3]='*';
-    vc2.hd.hinhvc[1][0]='*';
-    vc2.hd.hinhvc[1][1]='*';
-    vc2.hd.hinhvc[1][2]='*';
-    vc2.hd.hinhvc[1][3]='*';
-    vc2.hd.hinhvc[2][0]='*';
-    vc2.hd.hinhvc[2][1]='*';
-    vc2.hd.hinhvc[2][2]='*';
-    vc2.hd.hinhvc[2][3]='*';
-    vc2.hd.hinhvc[3][0]='*';
-    vc2.hd.hinhvc[3][1]='*';
-    vc2.hd.hinhvc[3][2]='*';
-    vc2.hd.hinhvc[3][3]='*';
-
-    vc3.hd.hinhvc[0][0]='*';
-    vc3.hd.hinhvc[0][1]='*';
-    vc3.hd.hinhvc[0][2]='*';
-    vc3.hd.hinhvc[0][3]='*';
-    vc3.hd.hinhvc[1][0]='*';
-    vc3.hd.hinhvc[1][1]='*';
-    vc3.hd.hinhvc[1][2]='*';
-    vc3.hd.hinhvc[1][3]='*';
-    vc3.hd.hinhvc[2][0]='*';
-    vc3.hd.hinhvc[2][1]='*';
-    vc3.hd.hinhvc[2][2]='*';
-    vc3.hd.hinhvc[2][3]='*';
-    vc3.hd.hinhvc[3][0]='*';
-    vc3.hd.hinhvc[3][1]='*';
-    vc3.hd.hinhvc[3][2]='*';
-    vc3.hd.hinhvc[3][3]='*';
-
-    int tmptdx = 1 + rand() % (bienphai - bientrai-1) + 15;
-    if(tmptdx > 15 && tmptdx < 20)
-        vc1.td.x = 16;
-    else if(tmptdx >=20 && tmptdx < 25)
-        vc1.td.x = 21;
-    else if(tmptdx >=25 && tmptdx < 30)
-        vc1.td.x = 26;
-    else if(tmptdx >=30 && tmptdx < 35)
-        vc1.td.x = 31;
-    else if(tmptdx >=35 && tmptdx < 40)
-        vc1.td.x = 36;
-    vc1.td.y = -4;
-
-     tmptdx = 1 + rand() % (bienphai - bientrai-1) + 15;
-    if(tmptdx > 15 && tmptdx < 20)
-        vc2.td.x = 16;
-    else if(tmptdx >=20 && tmptdx < 25)
-        vc2.td.x = 21;
-    else if(tmptdx >=25 && tmptdx < 30)
-        vc2.td.x = 26;
-    else if(tmptdx >=30 && tmptdx < 35)
-        vc2.td.x = 31;
-    else if(tmptdx >=35 && tmptdx < 40)
-        vc2.td.x = 36;
-    vc2.td.y = -4;
-
-     tmptdx = 1 + rand() % (bienphai - bientrai-1) + 15;
-    if(tmptdx > 15 && tmptdx < 20)
-        vc3.td.x = 16;
-    else if(tmptdx >=20 && tmptdx < 25)
-        vc3.td.x = 21;
-    else if(tmptdx >=25 && tmptdx < 30)
-        vc3.td.x = 26;
-    else if(tmptdx >=30 && tmptdx < 35)
-        vc3.td.x = 31;
-    else if(tmptdx >=35 && tmptdx < 40)
-        vc3.td.x = 36;
-    vc3.td.y = -4;
+	int Xu_ly_game(int &toSleep)
+	{
+		vc1.td.y++;
 
 
-    // khởi tạo vật phẩm
-    vp.hd.hinhvp[0][0]='$';
-    vp.hd.hinhvp[0][1]='$';
-    vp.hd.hinhvp[1][0]='$';
-    vp.hd.hinhvp[1][1]='$';
-
-    vp.td.y = -2;
-    tmptdx = 1 + rand() % (bienphai - bientrai-1) + 15;
-    if(tmptdx > 15 && tmptdx < 20)
-        vp.td.x = 17;
-    else if(tmptdx >=20 && tmptdx < 25)
-        vp.td.x = 22;
-    else if(tmptdx >=25 && tmptdx < 30)
-        vp.td.x = 27;
-    else if(tmptdx >=30 && tmptdx < 35)
-        vc3.td.x = 32;
-    else if(tmptdx >=35 && tmptdx < 40)
-        vp.td.x = 37;
-
-}
-void Hien_thi_trang_thai_game(Xe xe, VatCan vc1, VatCan vc2, VatCan vc3, VatPham vp)
-{
-    system("cls");
-    // hiển thị biên
-    for(int i = 0; i < bienduoi; i++)
-    {
-         gotoXY(15, i);
-         cout << '#';
-    }
-     for(int i = 0; i < bienduoi; i++)
-    {
-         gotoXY(20, i);
-         cout << '|';
-    }
-     for(int i = 0; i < bienduoi; i++)
-    {
-         gotoXY(25, i);
-         cout << '|';
-    }
-     for(int i = 0; i < bienduoi; i++)
-    {
-         gotoXY(30, i);
-         cout << '|';
-    }
-     for(int i = 0; i < bienduoi; i++)
-    {
-         gotoXY(35, i);
-         cout << '|';
-    }
-     for(int i = 0; i < bienduoi; i++)
-    {
-         gotoXY(40, i);
-         cout << '#';
-    }
-
-  //  gotoXY(15, bienduoi);
-  //  for(int i = 15; i <= 40; i++)
-   //     cout << '#';
+		if (vc1.td.y == bienduoi)
+		{
+			vc1.td.x = randomToaDo();
+			vc1.td.y = -4;
+			xe.diem++;
+			if (toSleep > 40)
+				toSleep -= 10;
+		}
 
 
-    //hiển thị xe
-    for(int i = 0; i < 4; i++)
-    {
-        for(int j = 0; j < 4; j++)
+		if (vc1.td.y > bienduoi / (rand() % 5 + 1) || vc2.td.y != -4)
+			vc2.td.y++;
+
+
+		if (vc2.td.y == bienduoi)
+		{
+			vc2.td.x = randomToaDo();
+			vc2.td.y = -4;
+			xe.diem++;
+			if (toSleep > 40)
+				toSleep -= 10;
+		}
+
+		if (vc2.td.y > bienduoi / (rand() % 5 + 1) || vc3.td.y != -4)
+			vc3.td.y++;
+
+
+
+		if (vc3.td.y == bienduoi)
+		{
+			vc3.td.x = randomToaDo();
+			vc3.td.y = -4;
+
+			xe.diem++;
+			if (toSleep > 40)
+				toSleep -= 10;
+		}
+
+		if (vc3.td.y > bienduoi / (rand() % 5 + 1) || vc4.td.y != -4)
+			vc4.td.y++;
+
+
+
+		if (vc4.td.y == bienduoi)
+		{
+			vc4.td.x = randomToaDo();
+			vc4.td.y = -4;
+
+			xe.diem++;
+			if (toSleep > 40)
+				toSleep -= 10;
+		}
+
+
+
+		if ((xe.diem % 10 == 0 || vp.td.y != -1) && xe.diem != 0)
+			 vp.td.y++;
+
+		if (vp.td.y == bienduoi)
+		{
+			vp.td.y = -1;
+			int  tmptdx = 1 + rand() % (bienphai - bientrai - 1) + 15;
+			if (tmptdx > 15 && tmptdx < 20)
+				vp.td.x = 17;
+			else if (tmptdx >= 20 && tmptdx < 25)
+				vp.td.x = 22;
+			else if (tmptdx >= 25 && tmptdx < 30)
+				vp.td.x = 27;
+			else if (tmptdx >= 30 && tmptdx < 35)
+				vp.td.x = 32;
+			else if (tmptdx >= 35 && tmptdx < 40)
+				vp.td.x = 37;
+		}
+
+		if ((vp.td.y - xe.td.y <= 3) && (vp.td.x - xe.td.x <= 1) && (vp.td.y - xe.td.y >= 0))
+		{
+			xe.diem += 5;
+			vp.td.y = -1;
+			int  tmptdx = 1 + rand() % (bienphai - bientrai - 1) + 15;
+			if (tmptdx > 15 && tmptdx < 20)
+				vp.td.x = 17;
+			else if (tmptdx >= 20 && tmptdx < 25)
+				vp.td.x = 22;
+			else if (tmptdx >= 25 && tmptdx < 30)
+				vp.td.x = 27;
+			else if (tmptdx >= 30 && tmptdx < 35)
+				vp.td.x = 32;
+			else if (tmptdx >= 35 && tmptdx < 40)
+				vp.td.x = 37;
+
+		}
+
+		if (abs(vc1.td.x - xe.td.x) <= 3 && abs(vc1.td.y - xe.td.y) <= 3)
+			return 0;
+		if (abs(xe.td.x - vc2.td.x) <= 3 && abs(xe.td.y - vc2.td.y) <= 3)
+			return 0;
+		if (abs(xe.td.x - vc3.td.x) <= 3 && abs(xe.td.y - vc3.td.y) <= 3)
+			return 0;
+        if (abs(xe.td.x - vc4.td.x) <= 3 && abs(xe.td.y - vc4.td.y) <= 3)
+			return 0;
+	}
+
+	void Dieu_khien_game()
+	{
+		if (kbhit())
+		{
+			char key = getch();
+
+			if ((key == 'A' || key == 'a') && xe.td.x > bientrai + 1)
+                xe.td.x -= 5;
+            else if ((key == 'd' || key == 'D') && xe.td.x < bienphai - 4)
+                xe.td.x += 5;
+            else if ((key == 'w' || key == 'W') && xe.td.y >= 1)
+                xe.td.y -= 2;
+            else if ((key == 's' || key == 'S') && xe.td.y < bienduoi - 4)
+                xe.td.y += 2;
+
+		}
+	}
+
+	int GetDiem()
+	{
+		return xe.diem;
+	}
+
+private:
+	Xe xe;
+	VatCan vc1, vc2, vc3, vc4;
+	VatPham vp;
+	vector < vector < char > > tengame ;
+    void khoiTaoVatPham()
+	{
+		khoiTaoHinhVatPham();
+		khoiTaoToaDoVatPham();
+	}
+
+	void khoiTaoHinhVatPham()
+	{
+		vp.hd.hinhvp[0][0] = '$';
+		vp.hd.hinhvp[0][1] = '$';
+	}
+
+	void khoiTaoToaDoVatPham()
+	{
+		vp.td.y = -1;
+		int tmptdx = 1 + rand() % (bienphai - bientrai - 1) + 15;
+		if (tmptdx > 15 && tmptdx < 20)
+			vp.td.x = 17;
+		else if (tmptdx >= 20 && tmptdx < 25)
+			vp.td.x = 22;
+		else if (tmptdx >= 25 && tmptdx < 30)
+			vp.td.x = 27;
+		else if (tmptdx >= 30 && tmptdx < 35)
+			vp.td.x = 32;
+		else if (tmptdx >= 35 && tmptdx < 40)
+			vp.td.x = 37;
+	}
+
+	void khoiTaoXe()
+	{
+		khoiTaoHinhXe();
+		khoiTaoToaDoXe();
+	}
+
+	void khoiTaoHinhXe()
+	{
+		xe.hd.hinhxe[0][0] = 237;
+		xe.hd.hinhxe[0][1] = 234;
+		xe.hd.hinhxe[0][2] = 234;
+		xe.hd.hinhxe[0][3] = 237;
+		xe.hd.hinhxe[1][0] = '|';
+		xe.hd.hinhxe[1][1] = 175;
+		xe.hd.hinhxe[1][2] = 175;
+		xe.hd.hinhxe[1][3] = '|';
+		xe.hd.hinhxe[2][0] = '|';
+		xe.hd.hinhxe[2][1] = 175;
+		xe.hd.hinhxe[2][2] = 175;
+		xe.hd.hinhxe[2][3] = '|';
+		xe.hd.hinhxe[3][0] = 237;
+		xe.hd.hinhxe[3][1] = 207;
+		xe.hd.hinhxe[3][2] = 207;
+		xe.hd.hinhxe[3][3] = 237;
+	}
+
+	void khoiTaoToaDoXe()
+	{
+		xe.td.y = bienduoi - 4;
+		xe.diem = 0;
+
+		xe.td.x = randomToaDo();
+	}
+
+	void khoiTaoVatCan()
+	{
+		khoiTaoHinhVatCan();
+		khoiTaoToaDoVatCan();
+	}
+
+	void khoiTaoHinhVatCan()
+	{
+		vc1.hd.hinhvc[0][0] = 234;
+		vc1.hd.hinhvc[0][1] = 234;
+		vc1.hd.hinhvc[0][2] = 234;
+		vc1.hd.hinhvc[0][3] = 234;
+		vc1.hd.hinhvc[1][0] = 247;
+		vc1.hd.hinhvc[1][1] = 247;
+		vc1.hd.hinhvc[1][2] = 247;
+		vc1.hd.hinhvc[1][3] = 247;
+		vc1.hd.hinhvc[2][0] = 247;
+		vc1.hd.hinhvc[2][1] = 247;
+		vc1.hd.hinhvc[2][2] = 247;
+		vc1.hd.hinhvc[2][3] = 247;
+		vc1.hd.hinhvc[3][0] = 234;
+		vc1.hd.hinhvc[3][1] = 234;
+		vc1.hd.hinhvc[3][2] = 234;
+		vc1.hd.hinhvc[3][3] = 234;
+
+		vc2.hd.hinhvc[0][0] = 234;
+		vc2.hd.hinhvc[0][1] = 234;
+		vc2.hd.hinhvc[0][2] = 234;
+		vc2.hd.hinhvc[0][3] = 234;
+		vc2.hd.hinhvc[1][0] = 247;
+		vc2.hd.hinhvc[1][1] = 247;
+		vc2.hd.hinhvc[1][2] = 247;
+		vc2.hd.hinhvc[1][3] = 247;
+		vc2.hd.hinhvc[2][0] = 247;
+		vc2.hd.hinhvc[2][1] = 247;
+		vc2.hd.hinhvc[2][2] = 247;
+		vc2.hd.hinhvc[2][3] = 247;
+		vc2.hd.hinhvc[3][0] = 234;
+		vc2.hd.hinhvc[3][1] = 234;
+		vc2.hd.hinhvc[3][2] = 234;
+		vc2.hd.hinhvc[3][3] = 234;
+
+		vc3.hd.hinhvc[0][0] = 234;
+		vc3.hd.hinhvc[0][1] = 234;
+		vc3.hd.hinhvc[0][2] = 234;
+		vc3.hd.hinhvc[0][3] = 234;
+		vc3.hd.hinhvc[1][0] = 247;
+		vc3.hd.hinhvc[1][1] = 247;
+		vc3.hd.hinhvc[1][2] = 247;
+		vc3.hd.hinhvc[1][3] = 247;
+		vc3.hd.hinhvc[2][0] = 247;
+		vc3.hd.hinhvc[2][1] = 247;
+		vc3.hd.hinhvc[2][2] = 247;
+		vc3.hd.hinhvc[2][3] = 247;
+		vc3.hd.hinhvc[3][0] = 234;
+		vc3.hd.hinhvc[3][1] = 234;
+		vc3.hd.hinhvc[3][2] = 234;
+		vc3.hd.hinhvc[3][3] = 234;
+
+		vc4.hd.hinhvc[0][0] = 234;
+		vc4.hd.hinhvc[0][1] = 234;
+		vc4.hd.hinhvc[0][2] = 234;
+		vc4.hd.hinhvc[0][3] = 234;
+		vc4.hd.hinhvc[1][0] = 247;
+		vc4.hd.hinhvc[1][1] = 247;
+		vc4.hd.hinhvc[1][2] = 247;
+		vc4.hd.hinhvc[1][3] = 247;
+		vc4.hd.hinhvc[2][0] = 247;
+		vc4.hd.hinhvc[2][1] = 247;
+		vc4.hd.hinhvc[2][2] = 247;
+		vc4.hd.hinhvc[2][3] = 247;
+		vc4.hd.hinhvc[3][0] = 234;
+		vc4.hd.hinhvc[3][1] = 234;
+		vc4.hd.hinhvc[3][2] = 234;
+		vc4.hd.hinhvc[3][3] = 234;
+
+	}
+
+	void khoiTaoToaDoVatCan()
+	{
+
+		vc1.td.x = randomToaDo();
+		vc1.td.y = -4;
+
+		vc2.td.x = randomToaDo();
+		vc2.td.y = -4;
+
+		vc3.td.x = randomToaDo();
+		vc3.td.y = -4;
+
+		vc4.td.x = randomToaDo();
+		vc4.td.y = -4;
+	}
+
+	void hienThiBien()
+	{
+		system("cls");
+		for (int i = 0; i < bienduoi; i++)
+		{
+			gotoXY(15, i);
+			cout << (char) 176;
+		}
+		for (int i = 0; i < bienduoi; i++)
+		{
+			gotoXY(20, i);
+			cout << '|';
+		}
+		for (int i = 0; i < bienduoi; i++)
+		{
+			gotoXY(25, i);
+			cout << '|';
+		}
+		for (int i = 0; i < bienduoi; i++)
+		{
+			gotoXY(30, i);
+			cout << '|';
+		}
+		for (int i = 0; i < bienduoi; i++)
+		{
+			gotoXY(35, i);
+			cout << '|';
+		}
+		for (int i = 0; i < bienduoi; i++)
+		{
+			gotoXY(40, i);
+			cout << (char) 176;
+		}
+
+		gotoXY(2, 14);
+		cout << "DIEM : " << xe.diem;
+
+	}
+
+	void hienThiXe()
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				int tmpx = xe.td.x + i;
+				int tmpy = xe.td.y + j;
+				gotoXY(tmpx, tmpy);
+				cout << xe.hd.hinhxe[j][i];
+			}
+		}
+	}
+
+	void hienThiVatCan()
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				int tmpx = vc1.td.x + i;
+				int tmpy = vc1.td.y + j;
+				if (tmpy >= 0 && tmpy < bienduoi)
+				{
+					gotoXY(tmpx, tmpy);
+					cout << vc1.hd.hinhvc[j][i];
+				}
+			}
+		}
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				int tmpx = vc2.td.x + i;
+				int tmpy = vc2.td.y + j;
+				if (tmpy >= 0 && tmpy < bienduoi)
+				{
+					gotoXY(tmpx, tmpy);
+					cout << vc2.hd.hinhvc[j][i];
+				}
+			}
+		}
+
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				int tmpx = vc3.td.x + i;
+				int tmpy = vc3.td.y + j;
+				if (tmpy >= 0 && tmpy < bienduoi)
+				{
+					gotoXY(tmpx, tmpy);
+					cout << vc3.hd.hinhvc[j][i];
+				}
+			}
+		}
+
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				int tmpx = vc4.td.x + i;
+				int tmpy = vc4.td.y + j;
+				if (tmpy >= 0 && tmpy < bienduoi)
+				{
+					gotoXY(tmpx, tmpy);
+					cout << vc1.hd.hinhvc[j][i];
+				}
+			}
+		}
+	}
+
+	void hienThiVatPham()
+	{
+	    if(vp.td.y != -1 && vp.td.y < bienduoi)
         {
-            int tmpx = xe.td.x + i;
-            int tmpy = xe.td.y + j;
-            gotoXY(tmpx, tmpy);
-            putch(xe.hd.hinhxe[j][i]);
+            gotoXY(vp.td.x, vp.td.y);
+            cout << vp.hd.hinhvp[0][0] << vp.hd.hinhvp[0][1];
         }
+
+
     }
 
-    // hiển thị vật cản
-    for(int i = 0; i < 4; i++)
-    {
-        for( int j = 0; j < 4; j++ )
+	int randomToaDo()
+	{
+		int tmptdx = 1 + rand() % (bienphai - bientrai - 1) + 15;
+		if (tmptdx > 15 && tmptdx < 20)
+			return 16;
+		else if (tmptdx >= 20 && tmptdx < 25)
+			return 21;
+		else if (tmptdx >= 25 && tmptdx < 30)
+			return 26;
+		else if (tmptdx >= 30 && tmptdx < 35)
+			return 31;
+		else if (tmptdx >= 35 && tmptdx < 40)
+			return 36;
+	}
+	void khoitaotengame()
+	{
+       int column = 23;
+	   for( int i = 0; i < 3; i++)
+        tengame.push_back( vector < char > (column));
+
+       tengame[0][0] = 'D';
+       tengame[0][1] = 'D';
+       tengame[0][2] = ' ';
+       tengame[0][3] = ' ';
+       tengame[0][4] = 'D';
+       tengame[0][5] = ' ';
+       tengame[0][6] = 'D';
+       tengame[0][7] = ' ';
+       tengame[0][8] = ' ';
+       tengame[0][9] = ' ';
+       tengame[0][10] = 'D';
+       tengame[0][11] = ' ';
+       tengame[0][12] = ' ';
+       tengame[0][13] = ' ';
+       tengame[0][14] = ' ';
+       tengame[0][15] = ' ';
+       tengame[0][16] = 'D';
+       tengame[0][17] = ' ';
+       tengame[0][18] = 'D';
+       tengame[0][19] = ' ';
+       tengame[0][20] = 'D';
+       tengame[0][21] = 'D';
+       tengame[0][22] = 'D';
+
+
+       tengame[1][0] = 'D';
+       tengame[1][1] = ' ';
+       tengame[1][2] = 'D';
+       tengame[1][3] = ' ';
+       tengame[1][4] = 'D';
+       tengame[1][5] = ' ';
+       tengame[1][6] = 'D';
+       tengame[1][7] = ' ';
+       tengame[1][8] = ' ';
+       tengame[1][9] = 'D';
+       tengame[1][10] = ' ';
+       tengame[1][11] = 'D';
+       tengame[1][12] = ' ';
+       tengame[1][13] = ' ';
+       tengame[1][14] = ' ';
+       tengame[1][15] = ' ';
+       tengame[1][16] = ' ';
+       tengame[1][17] = 'D';
+       tengame[1][18] = ' ';
+       tengame[1][19] = ' ';
+       tengame[1][20] = 'D';
+       tengame[1][21] = 'D';
+       tengame[1][22] = ' ';
+
+
+       tengame[2][0] = 'D';
+       tengame[2][1] = 'D';
+       tengame[2][2] = ' ';
+       tengame[2][3] = ' ';
+       tengame[2][4] = 'D';
+       tengame[2][5] = 'D';
+       tengame[2][6] = 'D';
+       tengame[2][7] = ' ';
+       tengame[2][8] = 'D';
+       tengame[2][9] = ' ';
+       tengame[2][10] = ' ';
+       tengame[2][11] = ' ';
+       tengame[2][12] = 'D';
+       tengame[2][13] = ' ';
+       tengame[2][14] = ' ';
+       tengame[2][15] = ' ';
+       tengame[2][16] = 'D';
+       tengame[2][17] = ' ';
+       tengame[2][18] = 'D';
+       tengame[2][19] = ' ';
+       tengame[2][20] = 'D';
+       tengame[2][21] = 'D';
+       tengame[2][22] = 'D';
+
+
+
+	}
+	void hienthitengame()
+	{
+	    gotoXY(42,2);
+	    for( int i = 0; i < 3; i++)
         {
-            int tmpx = vc1.td.x + i;
-            int tmpy = vc1.td.y + j;
-            if(tmpy >= 0 && tmpy < bienduoi)
+            for( int j = 0; j < 23; j++)
             {
-                gotoXY(tmpx, tmpy);
-                putch(vc1.hd.hinhvc[j][i]);
+               gotoXY(42 + j, 2 + i);
+               cout << tengame[i][j];
             }
         }
-    }
-    for(int i = 0; i < 4; i++)
-    {
-        for( int j = 0; j < 4; j++ )
-        {
-            int tmpx = vc2.td.x + i;
-            int tmpy = vc2.td.y + j;
-            if(tmpy >= 0 && tmpy < bienduoi)
-            {
-                gotoXY(tmpx, tmpy);
-                putch(vc2.hd.hinhvc[j][i]);
-            }
-        }
-    }
+	}
+};
 
-    for(int i = 0; i < 4; i++)
-    {
-        for( int j = 0; j < 4; j++ )
-        {
-            int tmpx = vc3.td.x + i;
-            int tmpy = vc3.td.y + j;
-            if(tmpy >= 0 && tmpy < bienduoi)
-            {
-                gotoXY(tmpx, tmpy);
-                putch(vc3.hd.hinhvc[j][i]);
-            }
-        }
-    }
-
-    // hiển thị vật phẩm
-    for(int i = 0; i < 2; i++)
-    {
-        for( int j = 0; j < 2; j++)
-        {
-          int  tmpx = vp.td.x + i;
-          int  tmpy = vp.td.y + j;
-            if(tmpy < bienduoi && tmpy >= 0)
-            {
-                gotoXY(tmpx, tmpy);
-                putch(vp.hd.hinhvp[j][i]);
-            }
-        }
-    }
-    gotoXY(2, 14);
-    cout << "DIEM : " << xe.diem;
-
-
-}
-
-int Xu_ly_game(Xe &xe, VatCan &vc1, VatCan &vc2, VatCan &vc3, int &toSleep, VatPham &vp)
-{   // vc1 di chuyển
-    vc1.td.y ++;
-
-    // vc1 chạm biên
-    if(vc1.td.y == bienduoi)
-    {
-        int tmptdx = 1 + rand() % (bienphai - bientrai-1) + 15;
-        if(tmptdx > 15 && tmptdx < 20)
-            vc1.td.x = 16;
-        else if(tmptdx >=20 && tmptdx < 25)
-            vc1.td.x = 21;
-        else if(tmptdx >=25 && tmptdx < 30)
-            vc1.td.x = 26;
-        else if(tmptdx >=30 && tmptdx < 35)
-            vc1.td.x = 31;
-        else if(tmptdx >=35 && tmptdx < 40)
-            vc1.td.x = 36;
-    vc1.td.y = -4;
-    xe.diem ++;
-    if(toSleep > 40)
-        toSleep -=10;
-    }
-
-
-    // vc2 xuất hiện khi vc1 đi quá 1/3
-    if(vc1.td.y > bienduoi/3 || vc2.td.y != -4)
-        vc2.td.y++;
-
-    // vc2 chạm biên
-    if(vc2.td.y == bienduoi)
-    {
-        int tmptdx = 1 + rand() % (bienphai - bientrai-1) + 15;
-        if(tmptdx > 15 && tmptdx < 20)
-            vc2.td.x = 16;
-        else if(tmptdx >=20 && tmptdx < 25)
-            vc2.td.x = 21;
-        else if(tmptdx >=25 && tmptdx < 30)
-            vc2.td.x = 26;
-        else if(tmptdx >=30 && tmptdx < 35)
-            vc2.td.x = 31;
-        else if(tmptdx >=35 && tmptdx < 40)
-            vc2.td.x = 36;
-        vc2.td.y = -4;
-        xe.diem ++;
-        if(toSleep > 40)
-            toSleep -= 10;
-    }
-
-     // vc2 xuất hiện khi vc1 đi quá 1/3
-    if(vc2.td.y > bienduoi/3 || vc3.td.y != -4)
-        vc3.td.y++;
-
-
-    // vc3 chạm biên
-    if(vc3.td.y == bienduoi)
-    {
-        int tmptdx = 1 + rand() % (bienphai - bientrai-1) + 15;
-        if(tmptdx > 15 && tmptdx < 20)
-                vc3.td.x = 16;
-        else if(tmptdx >=20 && tmptdx < 25)
-            vc3.td.x = 21;
-        else if(tmptdx >=25 && tmptdx < 30)
-            vc3.td.x = 26;
-        else if(tmptdx >=30 && tmptdx < 35)
-            vc3.td.x = 31;
-        else if(tmptdx >=35 && tmptdx < 40)
-            vc3.td.x = 36;
-        vc3.td.y = -4;
-
-        xe.diem ++;
-        if(toSleep > 40)
-            toSleep -= 10;
-    }
-        // rơi vật phẩm
-     if((xe.diem % 10 == 0 || vp.td.y != -2) && xe.diem != 0)
-        vp.td.y ++;
-
-    if(vp.td.y == bienduoi)
-    {
-        vp.td.y = -2;
-    int  tmptdx = 1 + rand() % (bienphai - bientrai-1) + 15;
-    if(tmptdx > 15 && tmptdx < 20)
-        vp.td.x = 17;
-    else if(tmptdx >=20 && tmptdx < 25)
-        vp.td.x = 22;
-    else if(tmptdx >=25 && tmptdx < 30)
-        vp.td.x = 27;
-    else if(tmptdx >=30 && tmptdx < 35)
-        vc3.td.x = 32;
-    else if(tmptdx >=35 && tmptdx < 40)
-        vp.td.x = 37;
-    }
-
-     // xử lí ăn vật phẩm
-     if((xe.td.y - vp.td.y <=2 )&&(vp.td.x - xe.td.x <= 1))
-     {
-         xe.diem+=5;
-         vp.td.y = -2;
-    int  tmptdx = 1 + rand() % (bienphai - bientrai-1) + 15;
-    if(tmptdx > 15 && tmptdx < 20)
-        vp.td.x = 17;
-    else if(tmptdx >=20 && tmptdx < 25)
-        vp.td.x = 22;
-    else if(tmptdx >=25 && tmptdx < 30)
-        vp.td.x = 27;
-    else if(tmptdx >=30 && tmptdx < 35)
-        vc3.td.x = 32;
-    else if(tmptdx >=35 && tmptdx < 40)
-        vp.td.x = 37;
-
-     }
-     if((vp.td.y - xe.td.y <= 3) && (vp.td.y - xe.td.y >=0 ) && (vp.td.x - xe.td.x <= 1))
-     {
-         xe.diem+=5;
-         vp.td.y = -2;
-    int  tmptdx = 1 + rand() % (bienphai - bientrai-1) + 15;
-    if(tmptdx > 15 && tmptdx < 20)
-        vp.td.x = 17;
-    else if(tmptdx >=20 && tmptdx < 25)
-        vp.td.x = 22;
-    else if(tmptdx >=25 && tmptdx < 30)
-        vp.td.x = 27;
-    else if(tmptdx >=30 && tmptdx < 35)
-        vc3.td.x = 32;
-    else if(tmptdx >=35 && tmptdx < 40)
-        vp.td.x = 37;
-     }
-
-
-
-    //XỬ LÍ VA CHẠM.
-  /*  if((xe.td.y - vc1.td.y <= 3) &&((xe.td.x-vc1.td.x <= 3)||(vc1.td.x - xe.td.x <= 3)))
-       return 0;
-    if((xe.td.y - vc2.td.y <= 3) &&((xe.td.x-vc2.td.x <= 3)||(vc2.td.x - xe.td.x <= 3)))
-       return 0;
-    if((xe.td.y - vc3.td.y <= 3) &&((xe.td.x-vc3.td.x <= 3)||(vc3.td.x - xe.td.x <= 3)))
-       return 0; */
-    if(abs(vc1.td.x-xe.td.x) <= 3 && abs(vc1.td.y-xe.td.y) <= 3)
-        return 0;
-     if(abs(xe.td.x-vc2.td.x) <= 3 && abs(xe.td.y-vc2.td.y) <= 3)
-        return 0;
-     if(abs(xe.td.x-vc3.td.x) <= 3 && abs(xe.td.y-vc3.td.y) <= 3)
-        return 0;
-
-
-
-
-}
-void Dieu_khien_game(Xe &xe)
-{
-    if(kbhit())
-    {
-        char key = getch();
-        if((key == 'A' || key=='a') && xe.td.x > bientrai+1)
-            xe.td.x-=5;
-        else if((key == 'd'||key == 'D') && xe.td.x <bienphai-4)
-            xe.td.x+=5;
-        else if((key == 'w' || key == 'W')&& xe.td.y >= 1)
-            xe.td.y -= 2;
-        else if((key == 's' || key == 'S')&& xe.td.y < bienduoi-4)
-            xe.td.y += 2;
-
-    }
-}
 int main()
 {
-    srand(time(NULL));
-    Xe xe;
-    VatCan vc1, vc2, vc3;
-    VatPham vp;
-    int toSleep = 200;
-    khoitao(xe, vc1, vc2, vc3, vp);
-    while(true)
-    {
-         int xuli;
+	srand(time(NULL));
+	char xulituychon;
+	int toSleep = 200;
+	XE xeclass;
+	cout << "1/ Let's go" << endl <<"2/ Exit";
+	xulituychon = getch();
+	if (xulituychon == '1')
+	{
+		int xuli2;
+		while(true)
+        {
+            xeclass.Dieu_khien_game();
+            xuli2 = xeclass.Xu_ly_game(toSleep);
+            xeclass.Hien_thi_trang_thai_game();
 
-         // hiển thị
-
-         Hien_thi_trang_thai_game(xe, vc1, vc2, vc3, vp);
-
-         // điều khiển
-
-        Dieu_khien_game(xe);
-
-         // xử lí
-
-         xuli = Xu_ly_game(xe, vc1, vc2, vc3, toSleep, vp);
-
-         // game over
-
-         if(xuli==0)
-         {
-             gotoXY(0, 0);
-             cout << " thua";
-             while(_getch()!=13)
+            if( xuli2 == 0)
+            {
+                system("cls");
+                gotoXY(1, 1);
+                cout << "Game over " << endl << "Diem cua ban: " << xeclass.GetDiem();
                 break;
-         }
-         Sleep(toSleep);
-    }
-    system("pause");
-    return 0;
-
+                system("pause");
+            }
+            Sleep(toSleep);
+        }
+	}
+	else if (xulituychon == '2')
+	{
+		system("cls");
+		cout << "HEN GAP LAI\t\t\t";
+		system("pause");
+	}
 }
