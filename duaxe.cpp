@@ -59,7 +59,7 @@ const int  xelan4 = 31;
 const int  xelan5 = 36;
 using namespace std;
 
-
+//=============THAM KHAO ======================
 void gotoXY(int column, int line)
 {
 	COORD coord;
@@ -74,7 +74,7 @@ void TextColor(int color)
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }
 
-//CHUONG TRÌNH
+//=======================================
 
 struct hinhdang
 {
@@ -135,67 +135,80 @@ public:
 		hienthitengame();
 	}
 
-	int Xu_ly_game(int &toSleep)
+	int Xu_ly_game(int &toSleep, int tocdovc1, int tocdovc2, int tocdovc3, int tocdovc4, int tocdovp)
 	{
-		vc1.td.y++;
+        chambien = 0;
+		vc1.td.y += tocdovc1;
 
 
 		if (vc1.td.y == bienduoi)
 		{
+		    do
 			vc1.td.x = randomToaDo();
+			while(vc1.td.x == vc2.td.x);
 			vc1.td.y = startvc;
 			xe.diem++;
 			if (toSleep > maxspeed)
 				toSleep -= speed;
+            chambien = 1;
 		}
 
 
 		if (vc1.td.y > bienduoi / (rand() % 5 + 1) || vc2.td.y != startvc)
-			vc2.td.y++;
+			vc2.td.y += tocdovc2;
 
 
 		if (vc2.td.y == bienduoi)
 		{
+		    do
 			vc2.td.x = randomToaDo();
+			while(vc2.td.x == vc3.td.x);
 			vc2.td.y = startvc;
 			xe.diem++;
 			if (toSleep > maxspeed)
 				toSleep -= speed;
+            chambien = 2;
 		}
 
 		if (vc2.td.y > bienduoi / (rand() % 5 + 1) || vc3.td.y != startvc)
-			vc3.td.y++;
+			vc3.td.y += tocdovc3;
 
 
 
 		if (vc3.td.y == bienduoi)
 		{
+		    do
 			vc3.td.x = randomToaDo();
+			while( vc3.td.x == vc4.td.x);
 			vc3.td.y = startvc;
 
 			xe.diem++;
 			if (toSleep > maxspeed)
 				toSleep -= speed;
+            chambien = 3;
 		}
 
 		if (vc3.td.y > bienduoi / (rand() % 5 + 1) || vc4.td.y != startvc)
-			vc4.td.y++;
+			vc4.td.y += tocdovc4;
 
 
 
 		if (vc4.td.y == bienduoi)
 		{
+		    do
 			vc4.td.x = randomToaDo();
+			while(vc4.td.x == vc1.td.x);
 			vc4.td.y = startvc;
 
 			xe.diem++;
 			if (toSleep > maxspeed)
 				toSleep -= speed;
+            chambien = 4;
 		}
 
 
 		if ((xe.diem % (rand()%10 + 1) == 0 || vp.td.y != startvp) && xe.diem != 0)
-			vp.td.y++;
+			vp.td.y += tocdovp;
 
 		if (vp.td.y == bienduoi)
 		{
@@ -211,6 +224,8 @@ public:
 				vp.td.x = vplan4;
 			else if (tmptdx >= 35 && tmptdx < 40)
 				vp.td.x = vplan5;
+            chambien = 5;
+
 		}
 
 		if ((vp.td.y - xe.td.y <= 3) && (vp.td.x - xe.td.x <= 1) && (vp.td.y - xe.td.y >= 0))
@@ -300,11 +315,16 @@ public:
 	{
 		return xe.diem;
 	}
+	int getchambien()
+	{
+	    return chambien;
+	}
 
 private:
 	Xe xe;
 	VatCan vc1, vc2, vc3, vc4;
 	VatPham vp;
+	int chambien;
 	vector < vector < char > > tengame;
 
 
@@ -692,6 +712,7 @@ void Menu();
 void MenuChet(int diem);
 void Huongdanchoigame();
 void Menu_out_game();
+int Randomtocdo();
 
 int main()
 {
@@ -748,13 +769,28 @@ void MenuChet(int diem)
 int ChoiGame(int toSleep)
 {
     XE xeclass;
+    int tocdovc1 = Randomtocdo();
+    int tocdovc2 = Randomtocdo();
+    int tocdovc3 = Randomtocdo();
+    int tocdovc4 = Randomtocdo();
+    int tocdovp = Randomtocdo();
 	while (true)
 	{
 		int xuli;
 
-		xuli = xeclass.Xu_ly_game(toSleep);
+		xuli = xeclass.Xu_ly_game(toSleep, tocdovc1, tocdovc2, tocdovc3, tocdovc4, tocdovp);
 		xeclass.Hien_thi_trang_thai_game();
 		xeclass.Dieu_khien_game();
+		if(xeclass.getchambien() == 1)
+            tocdovc1 = Randomtocdo();
+        if(xeclass.getchambien() == 2)
+            tocdovc2 = Randomtocdo();
+        if(xeclass.getchambien() == 3)
+            tocdovc3 = Randomtocdo();
+        if(xeclass.getchambien() == 4)
+            tocdovc4 = Randomtocdo();
+        if(xeclass.getchambien() == 5)
+            tocdovp = Randomtocdo();
 
 		if (xuli == 0)
 		{
@@ -783,3 +819,12 @@ void Menu_out_game()
     cout << "\t\tSEE YOU AGAIN\n ";
     system("pause");
 }
+
+int Randomtocdo()
+	{
+	    int  tocdo = rand() % 2;
+        if(tocdo == 0)
+            return 2;
+        else
+            return 1;
+	}
